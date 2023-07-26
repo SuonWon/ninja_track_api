@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const categoryRoute = require('./routes/category.route');
 const modeRoute = require('./routes/mode.route');
+const userRoute = require('./routes/user.route');
 
 require('dotenv').config();
 
@@ -14,7 +15,8 @@ app.use((req, res, next) => {
 })
 
 app.use('/api/category', categoryRoute);
-app.use('/api/payment-mode', modeRoute)
+app.use('/api/payment-mode', modeRoute);
+app.use('/api', userRoute);
 
 
 const dbURI = `mongodb+srv://${process.env.DB_ACCESS_NAME}:${process.env.DB_PASSWORD}@${process.env.CLUSTER_NAME}.txjxycc.mongodb.net/${process.env.DATABASE_NAME}`;

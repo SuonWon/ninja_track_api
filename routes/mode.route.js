@@ -1,17 +1,17 @@
 const express = require('express');
-
+const bodyParser = require('body-parser')
+const { getAllData, getData, createData, updateData, deleteData } = require('../controllers/mode.controller');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {});
+router.get('/', getAllData);
 
-router.get('/:id', (req, res) => {});
+router.get('/:id', getData);
 
-router.post('/add', (req, res) => {});
+router.post('/add', bodyParser.json(), createData);
 
-router.put('/edit/:id', (req, res) => {});
+router.put('/edit/:id', bodyParser.json(), updateData);
 
-router.delete('/delete/:id', (req, res) => {});
-
+router.delete('/delete/:id', deleteData);
 
 module.exports = router;

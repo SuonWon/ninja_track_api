@@ -32,9 +32,7 @@ const getData = async (req, res) => {
 }
 
 const createData = async (req, res) => {
-    console.log(req.body);
     const {category} = req.body;
-
 
     try {
         await Category.create({category})
