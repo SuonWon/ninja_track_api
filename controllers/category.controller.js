@@ -75,9 +75,7 @@ const deleteData = async (req, res) => {
             return res.status(404).json({error: "This category is not found!"});
         }
 
-        const category = await Category.findOneAndDelete({_id: id}, {
-            ...req.body
-        });
+        const category = await Category.findOneAndDelete({_id: id});
 
         if(!category) {
             return res.status(404).json({error: "This category is not found!"});
