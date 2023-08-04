@@ -38,5 +38,7 @@ mongoose.connect(dbURI)
         console.log(err);
     });
 
-
-exports.app = functions.https.onRequest(app);
+const ninjaAPI = exports.app = functions.https.onRequest(app);
+module.exports = {
+    ninjaAPI
+}
