@@ -5,6 +5,12 @@ const categorySchema = new Schema({
     category: {
         type: String,
         require: true
+    },
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+        type: String,
+        require: true
     }
 }, {timestamps: true});
 

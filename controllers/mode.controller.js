@@ -1,9 +1,12 @@
 const Mode = require('../models/mode');
 const mongoose = require('mongoose');
+const Transaction = require('../models/transaction');
 
 const getAllData = async (req, res) => {
+    const {user} = req.query;
+
     try {
-        const modes = await Mode.find().sort({createdAt: -1});
+        const modes = await Mode.find({user: user}).sort({createdAt: -1});
         res.status(200).json(modes);
     } 
     catch(err) {
@@ -33,10 +36,14 @@ const getData = async (req, res) => {
 
 const createData = async (req, res) => {
 
-    const {mode} = req.body;
-
+    const {mode, user} = req.body;
+    console.log(user);
     try {
-        await Mode.create({mode})
+        const newMode = Mode({
+            mode: mode,
+            user: user
+        })
+        await newMode.save();
 
         res.status(200).json({message: "New payment mode is created sccessfully!"});
     }
@@ -74,6 +81,11 @@ const deleteData = async (req, res) => {
     try {
         if(!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(404).json({error: "This payment mode is not found!"});
+        }
+
+        const isUsed = await Transaction.find({mode: id});
+        if(isUsed.length > 0) {
+            return res.status(409).json({error: "This payment mode is used in transaction!. You cannot deleted"});
         }
 
         const mode = await Mode.findOneAndDelete({_id: id}, {

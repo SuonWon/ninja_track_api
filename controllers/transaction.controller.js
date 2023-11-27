@@ -3,16 +3,52 @@ const mongoose = require('mongoose');
 const moment = require('moment');
 
 const getAllData = async (req, res) => {
-    const { category, duration } = req.query;
+    const { category, duration, remark, user } = req.query;
+
+    let startDate, endDate = '';
+    
+    switch (duration) {
+        case "Today":
+            startDate = moment(new Date()).format('YYYY-MM-DD') + 'T00:00:00';
+            endDate = moment(new Date()).format('YYYY-MM-DD') + 'T23:59:59';
+            break;
+
+        case "Yesterday":
+            let yesterday = new Date();
+            startDate = moment(yesterday.setDate(yesterday.getDate() - 1)).format('YYYY-MM-DD') + 'T00:00:00';
+            endDate = moment(yesterday).format('YYYY-MM-DD') + 'T23:59:59';
+            break;
+    
+        default:
+            break;
+    }
+
+    console.log("duration: " + duration);
+    console.log("startdate: " + startDate);
+    console.log("enddate: " + endDate);
+    console.log('reamrk: ' + remark);
 
     try{
-        const transaction = await Transaction.find(
-            category != undefined ? {category: category} : {}
+        const transaction = await Transaction.find({
+            $and: [
+                { user: user},
+                duration == undefined ? {} : 
+                    {
+                        datetime: {
+                            $gte: startDate,
+                            $lte: endDate
+                        }
+                    },
+                category != null ? { category: category} : {},
+                remark != null ? { remark: new RegExp('.*' + remark + '.*')} : {}
+            ]
+        }
+            
         ).sort({datetime: -1});
 
         res.status(200).json(transaction);
     }
-    catch(er) {
+    catch(err) {
         res.status(400).json({error: err.message});
     }
 }
@@ -37,7 +73,7 @@ const getData = async (req, res) => {
 }
 
 const createData = async (req, res) => {
-    const { datetime, amount, remark, category, paymentMode, cashType } = req.body;
+    const { datetime, amount, remark, category, paymentMode, cashType, user } = req.body;
 
     const newTransaction = Transaction({
         datetime: datetime,
@@ -45,7 +81,8 @@ const createData = async (req, res) => {
         remark: remark,
         category: category,
         paymentMode: paymentMode,
-        cashType: cashType
+        cashType: cashType,
+        user: user
     });
 
     try {

@@ -1,9 +1,12 @@
 const Category = require('../models/category');
 const mongoose = require('mongoose');
+const Transaction = require('../models/transaction');
 
 const getAllData = async (req, res) => {
+    const {user} = req.query;
+
     try {
-        const categories = await Category.find().sort({createdAt: -1});
+        const categories = await Category.find({user: user}).sort({createdAt: -1});
         res.status(200).json(categories);
     } 
     catch(err) {
@@ -32,10 +35,16 @@ const getData = async (req, res) => {
 }
 
 const createData = async (req, res) => {
-    const {category} = req.body;
+    const {category, user} = req.body;
+    console.log(user);
 
     try {
-        await Category.create({category})
+        const newCategory = Category({
+            category: category,
+            user: user
+        })
+        console.log(newCategory);
+        await newCategory.save();
 
         res.status(200).json({message: "New category is created sccessfully!"});
     }
@@ -73,6 +82,12 @@ const deleteData = async (req, res) => {
     try {
         if(!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(404).json({error: "This category is not found!"});
+        }
+
+        const isUsed = await Transaction.find({category: id});
+
+        if(isUsed.length > 0) {
+            return res.status(409).json({error: "This category is used in transaction!. You cannot deleted"});
         }
 
         const category = await Category.findOneAndDelete({_id: id});

@@ -63,17 +63,25 @@ const login = async (req, res) => {
 }
 
 const createData = async (req, res) => {
-    const { username, password } = req.body;
+
+    const { username, password, fullName } = req.body;
 
     const newUser = User({
         username: username,
         password: password,
-        fullName: null,
+        fullName: fullName,
         email: null,
         phoneNo: null
     })
 
     try {
+
+        const exist = await User.find({ username: username});
+
+        if(exist) {
+            res.status(409).json({error: "This username is already in used!"})
+        }
+
         let token = jwt.sign({username, password}, process.env.SECRET, { expiresIn: '1m' });
 
         const user = await newUser.save();
@@ -101,7 +109,7 @@ const updateData = async (req, res) => {
             return res.status(404).json({error: "This user is not found!"});
         }
 
-        res.status(200).json({message: "This user is updated successfully!"});
+        res.status(200).json({message: "This user is updated successfully!", data: user});
     }
     catch(err) {
         res.status(400).json({error: err.message});
