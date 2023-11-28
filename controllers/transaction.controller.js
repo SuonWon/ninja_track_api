@@ -18,15 +18,22 @@ const getAllData = async (req, res) => {
             startDate = moment(yesterday.setDate(yesterday.getDate() - 1)).format('YYYY-MM-DD') + 'T00:00:00';
             endDate = moment(yesterday).format('YYYY-MM-DD') + 'T23:59:59';
             break;
+
+        case "ThisMonth":
+            let curDate = new Date();
+            startDate = moment(new Date(curDate.getFullYear(), curDate.getMonth(), 1)).format('YYYY-MM-DD') + 'T00:00:00';
+            endDate = moment(new Date(curDate.getFullYear(), curDate.getMonth() + 1, 0)).format('YYYY-MM-DD') + 'T23:59:59';
+            break;
+
+        case "LastMonth":
+            let lastMonth = new Date();
+            startDate = moment(new Date(lastMonth.getFullYear(), lastMonth.getMonth() - 1, 1)).format('YYYY-MM-DD') + 'T00:00:00';
+            endDate = moment(new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 0)).format('YYYY-MM-DD') + 'T23:59:59';
+            break;
     
         default:
             break;
     }
-
-    console.log("duration: " + duration);
-    console.log("startdate: " + startDate);
-    console.log("enddate: " + endDate);
-    console.log('reamrk: ' + remark);
 
     try{
         const transaction = await Transaction.find({
