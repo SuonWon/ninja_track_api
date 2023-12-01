@@ -83,7 +83,7 @@ const deleteData = async (req, res) => {
             return res.status(404).json({error: "This payment mode is not found!"});
         }
 
-        const isUsed = await Transaction.find({mode: id});
+        const isUsed = await Transaction.find({paymentMode: id});
         if(isUsed.length > 0) {
             return res.status(409).json({error: "This payment mode is used in transaction!. You cannot deleted"});
         }

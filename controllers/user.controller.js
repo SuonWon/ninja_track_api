@@ -25,37 +25,20 @@ const getData = async (req, res) => {
 
 const login = async (req, res) => {
     const {username, password} = req.body;
-    // const { authorization } = req.headers;
-
-    // const token = authorization && authorization.split(' ')[1]
-
+   
     try{
-       
-    //     if(token) {
-    //         jwt.verify(token, process.env.SECRET, (err, user) => {
-    //             if(err) {
-    //                 return res.status(403).json({error: "Token Expired! Please login again."})
-    //             }
-                
-    //             return res.status(200).json(user);
-    //         })
-    //     } else {
- 
-            const user = await User.findOne({username: username})
 
-            if(!user) {
-                return res.status(404).json({error: "Username is wrong!"});
-            }
-            else if(user.password !== password) {
-                return res.status(404).json({error: "Password is wrong!"});
-            }
-            
-            //let token = jwt.sign({username, password}, process.env.SECRET, { expiresIn: '1m' });
+        const user = await User.findOne({username: username})
 
-        //     console.log(token);
+        if(!user) {
+            return res.status(404).json({error: "Username is wrong!"});
+        }
+        else if(user.password !== password) {
+            return res.status(404).json({error: "Password is wrong!"});
+        }
+        
+        res.status(200).json(user);
 
-            res.status(200).json(user);
-        // }
     }
     catch(err) {
         res.status(400).json({error: err.message});
